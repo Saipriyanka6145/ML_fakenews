@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection AI - Sai Priyanka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 860px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 16px;
+            color: #f8fafc;
+            font-size: 1rem;
+            resize: vertical;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        .sample-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sample {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-sample:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #fff;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px -5px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-clear {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .result-card {
+            display: none;
+            margin-top: 24px;
+            padding: 24px;
+            border-radius: 14px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .result-card.real {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .result-card.fake {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .result-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .metric-box {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #818cf8;
+            text-decoration: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">Machine Learning & NLP</div>
+            <h1>📰 Fake News Detection AI</h1>
+            <p>Paste any news article or statement below to classify it as Real or Fake.</p>
+        </div>
+
+        <div class="main-card">
+            <div class="form-group">
+                <label for="newsInput">News Content</label>
+                <div class="sample-buttons">
+                    <button class="btn-sample" onclick="loadSample('real')">📋 Load Real News Sample</button>
+                    <button class="btn-sample" onclick="loadSample('fake')">📋 Load Fake News Sample</button>
+                </div>
+                <textarea id="newsInput" placeholder="Paste full article text or headline here..."></textarea>
+            </div>
+
+            <div class="action-area">
+                <button class="btn-clear" onclick="clearText()">Clear</button>
+                <button class="btn-predict" id="predictBtn" onclick="classifyNews()">🔍 Analyze News</button>
+            </div>
+
+            <div id="resultCard" class="result-card">
+                <div class="result-title" id="resultLabel">Result</div>
+                <p id="resultDetails" style="color: #cbd5e1; font-size: 0.95rem;"></p>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: #e2e8f0;">⚡ Model Performance Overview</h3>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-title">Linear SVM Accuracy</div>
+                    <div class="metric-value" style="color: #38bdf8;">99.37%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">Random Forest Accuracy</div>
+                    <div class="metric-value" style="color: #a78bfa;">98.83%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">Logistic Regression</div>
+                    <div class="metric-value" style="color: #34d399;">98.52%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-title">Dataset Size</div>
+                    <div class="metric-value" style="color: #fbbf24;">44,898</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Built with ❤️ by <strong>Sai Priyanka</strong> | <a href="https://github.com/Saipriyanka6145/ML_fakenews" target="_blank">GitHub Repository</a>
+        </div>
+    </div>
+
+    <script>
+        const samples = {
+            real: "WASHINGTON (Reuters) - The U.S. State Department said on Wednesday it was closely monitoring the political situation in Zimbabwe following a military takeover, and urged all parties in Zimbabwe to remain calm and resolve disputes peacefully.",
+            fake: "BREAKING: Secret documents leaked from a classified meeting show a bizarre conspiracy involving global leaders and hidden space stations. Anonymous sources claim all media outlets were silenced immediately."
+        };
+
+        function loadSample(type) {
+            document.getElementById('newsInput').value = samples[type];
+        }
+
+        function clearText() {
+            document.getElementById('newsInput').value = '';
+            document.getElementById('resultCard').style.display = 'none';
+        }
+
+        async function classifyNews() {
+            const text = document.getElementById('newsInput').value.trim();
+            if (!text) {
+                alert('Please enter some news text to analyze.');
+                return;
+            }
+
+            const btn = document.getElementById('predictBtn');
+            btn.disabled = true;
+            btn.innerText = 'Analyzing...';
+
+            try {
+                const response = await fetch('/predict_api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+                const card = document.getElementById('resultCard');
+                const label = document.getElementById('resultLabel');
+                const details = document.getElementById('resultDetails');
+
+                card.style.display = 'block';
+
+                if (data.prediction === 'Real News' || data.label === 1) {
+                    card.className = 'result-card real';
+                    label.innerText = '✅ Authentic / Real News';
+                    details.innerText = `The model analyzed the linguistic structure and classified this article as Real News with high confidence.`;
+                } else {
+                    card.className = 'result-card fake';
+                    label.innerText = '⚠️ Warning: Fake News Detected';
+                    details.innerText = `The model identified stylistic and semantic patterns indicative of misinformation or Fake News.`;
+                }
+            } catch (err) {
+                alert('Error making prediction. Make sure server is running.');
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '🔍 Analyze News';
+            }
+        }
+    </script>
+</body>
+</html>

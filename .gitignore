@@ -1,4 +1,4 @@
-# Python cache & checkpoints
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -8,3 +8,8 @@ __pycache__/
 .venv/
 env/
 venv/
+
+# Large Datasets
+data/
+*.csv
+baton/
